@@ -11,7 +11,7 @@ plt.rcParams['figure.figsize'] = (20, 10)
 from dotenv import load_dotenv
 load_dotenv()
 
-apikey = 'f50bf291153d4096b2ec3e3466c7438e'
+apikey = os.getenv('TWELVE_DATA_API_KEY')
 td = TDClient(apikey = apikey)
 
 # ヒストリカルデータを取得

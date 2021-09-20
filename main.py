@@ -5,24 +5,25 @@ import numpy as np
 from twelvedata import TDClient
 import time
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 plt.style.use('fivethirtyeight')
 plt.rcParams['figure.figsize'] = (20, 10)
 from dotenv import load_dotenv
 load_dotenv()
 
-apikey = os.getenv('TWELVE_DATA_API_KEY')
+apikey = 'f50bf291153d4096b2ec3e3466c7438e'
 td = TDClient(apikey = apikey)
 
 # ヒストリカルデータを取得
 def get_historical_data(symbol):
     interval = '5min' # 時間軸
     outputsize = 2000 # 最大取得件数
-    start_date = '2021-09-16 06:00' # 取得開始日（「yyyy-MM-dd」 or 「yyyy-MM-dd hh:mm:ss」）
-    end_date = '2021-09-17 05:59' # 取得終了日（「yyyy-MM-dd」 or 「yyyy-MM-dd hh:mm:ss」）
+    start_date = '2021-09-20 06:00' # 取得開始日（「yyyy-MM-dd」 or 「yyyy-MM-dd hh:mm:ss」）
+    end_date = '2021-09-21 05:59' # 取得終了日（「yyyy-MM-dd」 or 「yyyy-MM-dd hh:mm:ss」）
     timezone = 'Asia/Tokyo' # タイムゾーン
 
     res = td.time_series(symbol = symbol, interval= interval, outputsize = outputsize, start_date = start_date, end_date = end_date, timezone = timezone).as_json()
-    
+
     df = pd.DataFrame(res).iloc[::-1].set_index('datetime').astype(float)
     df = df[df.index >= start_date]
     df.index = pd.to_datetime(df.index)
@@ -35,16 +36,16 @@ def calc_logarithmic_change_rates(symbols):
 
     for symbol in symbols:
         print(f'Fetching {symbol} ...')
-        
+
         historical_data = get_historical_data(symbol)
         logarithmic_change_rate = np.log(historical_data['close'] / historical_data['close'][0])
-        
+
         logarithmic_change_rates.append(logarithmic_change_rate)
 
-        time.sleep(8) # 無料プランにおけるTwelveDataのAPIコールは1分間に8件までなので間隔を空ける
-    
+        time.sleep(8) # 無料プランにおけるTwelve DataのAPIコールは1分間に8件までなので間隔を空ける
+
     print('\n Finished !')
-    
+
     return logarithmic_change_rates
 
 # 通貨ペア一覧
